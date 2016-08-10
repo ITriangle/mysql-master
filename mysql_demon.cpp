@@ -17,29 +17,36 @@ using namespace std;
  */
 int main(int argc, char* argv[])
 {
+	MySQLQuery* sqlQuery;
 
 	printf("Hello world\n");
 
 	MySQLConnection *sqlConn = new MySQLConnection();
 	sqlConn->Connect("127.0.0.1", 3306, "root", "wanglong", "class");
 
-	MySQLQuery* sqlQuery = new MySQLQuery(sqlConn,"insert student values(?,?,?)");
 
-	sqlQuery->setInt(0,111);
+	//insert
+	sqlQuery = new MySQLQuery(sqlConn,"insert student values(?,?,?)");
+	sqlQuery->setInt(0,118);
 	sqlQuery->setString(1,"Kaa");
 	sqlQuery->setInt(2,100);
-	cout << "Last inserted Line:" << sqlQuery->ExecuteQuery() << endl;
+	sqlQuery->ExecuteInsert();
+	delete sqlQuery;
 
+	//update
+	sqlQuery = new MySQLQuery(sqlConn,"update student set age = ? where name = ?");
+	sqlQuery->setInt(0,43);
+	sqlQuery->setString(1,"Kaa");
+	sqlQuery->ExecuteUpdate();
+	delete sqlQuery;
+
+	//select
 	sqlQuery = new MySQLQuery(sqlConn, "select * from student");
-
 	sqlQuery->ExecuteQuery();
+
 
 	printf("GetResultRowCount: %d\n", sqlQuery->GetResultRowCount());
 	printf("GetFieldCount : %d\n", sqlQuery->GetFieldCount());
-
-
-	
-
 
 	for (int n = 0; n < sqlQuery->GetFieldCount(); n++)
 	{
@@ -56,7 +63,10 @@ int main(int argc, char* argv[])
 		cout << endl;
 	}
 
+	delete sqlQuery;
 
+
+	delete sqlConn;
 
 
 	return 0;

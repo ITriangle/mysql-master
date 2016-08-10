@@ -1,6 +1,5 @@
 #ifndef MYSQL_MASTER_H
 #define MYSQL_MASTER_H
-// #include <mysql.h>
 #include <mysql/mysql.h>
 #include <stdint.h>
 #include <string>

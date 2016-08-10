@@ -1,4 +1,4 @@
-#include "mysqlquery.h"
+#include "mysql_master.h"
 
 MySQLConnection::MySQLConnection()
 {
@@ -132,6 +132,11 @@ MySQLQuery::MySQLQuery(MySQLConnection *mConn, const std::string &sStatement)
     {
         m_mArgMap.insert(std::pair<int, std::string>(i, ""));
     }
+}
+
+MySQLQuery::~MySQLQuery()
+{
+    
 }
 
 bool MySQLQuery::setString(const unsigned int &idx, const std::string &value)
@@ -467,16 +472,27 @@ bool MySQLQuery::ExecuteQuery()
 
     if (mysql_query(m_sqlConn->getConn(), sStatement.c_str()))
     {
-        std::cerr << "MySQL Error: " << m_sqlConn->GetLastError() << std::endl;
+        std::cerr << "MySQL Error : " << m_sqlConn->GetLastError() << std::endl;
         return false;
+
     }
 
     MYSQL_RES *result = mysql_store_result(m_sqlConn->getConn());
 
     if (result == NULL)
     {
-        std::cerr << "MySQL Error: " << m_sqlConn->GetLastError() << std::endl;
-        return false;
+        if (mysql_field_count(m_sqlConn->getConn()) == 0)
+        {
+            mysql_free_result(result);
+            return true;//it was not a select
+        }
+        else
+        {
+            std::cerr << "MySQL Error : " << m_sqlConn->GetLastError() << std::endl;
+            mysql_free_result(result);
+            return false;
+        }
+
     }
 
 
@@ -508,6 +524,7 @@ bool MySQLQuery::ExecuteQuery()
         i++;
     }
 
+    mysql_free_result(result);
     return true;
 }
 

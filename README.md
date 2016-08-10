@@ -1,2 +1,4 @@
-# mysql-master
-There is C++ client for mysql
+MySQLQueryPP
+==========
+
+A C++ MySQL Query/Connection class which uses the C-Connector
